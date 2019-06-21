@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Zmeyka</title>
+  <style>
+  html, body {
+    height: 100%%;
+    margin: 0;
+  }
+  h1{
+    object-position: center;
+  }
+  .darkred-h1{
+    color: darkred;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .black_body{
+    background: black;
+  }
+  .white_canvas {
+    border: 1px solid white;
+  }
+  div{
+    float: inherit;
+  }
+  </style>
+
+</head>
+<body class="black_body">
+<div align="center">
+<h1 id=h1 class="darkred-h1">Очки: </h1>
+<canvas class="white_canvas" width="400" height="400" id="game"></canvas>
+</div>
+<script>
+alert("Привет! Все мы любим старую - классическую игру. Zmeyka выходит на новый уровень! Браузер пополнится новой увлекательной игрой! Управление - W A S D! Правила не изменились) А вот какой будет результат - решать тебе! Да прибудет с тобой Великий змей!")
+let canvas = document.getElementById('game');
+let context = canvas.getContext('2d');
+let score_text = document.getElementById('h1');
+let grid = 16;
+let count = 0;
+let score = 0;
+let snake = {
+  x: 160,
+  y: 160,
+  dx: grid,
+  dy: 0,
+  cells: [],
+  maxCells: 4
+};
+let apple = {
+  x: 320,
+  y: 320
+};
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+function loop() {
+  requestAnimationFrame(loop);
+  
+  score_text.textContent = "Очки: " + score;
+  if (++count < 4) {
+    return;
+  }
+  count = 0;
+  context.clearRect(0,0,canvas.width,canvas.height);
+  snake.x += snake.dx;
+  snake.y += snake.dy;
+  if (snake.x < 0) {
+    snake.x = canvas.width - grid;
+  }
+  else if (snake.x >= canvas.width) {
+    snake.x = 0;
+  }
+  if (snake.y < 0) {
+    snake.y = canvas.height - grid;
+  }
+  else if (snake.y >= canvas.height) {
+    snake.y = 0;
+  }
+  snake.cells.unshift({x: snake.x, y: snake.y});
+  if (snake.cells.length > snake.maxCells) {
+    snake.cells.pop();
+  }
+  context.fillStyle = 'red';
+  context.fillRect(apple.x, apple.y, grid-1, grid-1);
+  context.fillStyle = 'white';
+  snake.cells.forEach(function(cell, index) {
+    context.fillRect(cell.x, cell.y, grid-1, grid-1);  
+    if (cell.x === apple.x && cell.y === apple.y) {
+      snake.maxCells++;
+      ++score;
+      apple.x = getRandomInt(0, 25) * grid;
+      apple.y = getRandomInt(0, 25) * grid;
+    }
+    for (var i = index + 1; i < snake.cells.length; i++) {
+      if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+        alert(score + " - А ты неплохо играешь, Великий Zmey! Начнём ещё один забег?")
+        score = 0;
+        snake.x = 160;
+        snake.y = 160;
+        snake.cells = [];
+        snake.maxCells = 4;
+        snake.dx = grid;
+        snake.dy = 0;
+        apple.x = getRandomInt(0, 25) * grid;
+        apple.y = getRandomInt(0, 25) * grid;
+      }
+    }
+  });
+}
+document.addEventListener('keydown', function(e) {
+  if (e.which === 65 && snake.dx === 0) {
+    snake.dx = -grid;
+    snake.dy = 0;
+  }
+  else if (e.which === 87 && snake.dy === 0) {
+    snake.dy = -grid;
+    snake.dx = 0;
+  }
+  else if (e.which === 68 && snake.dx === 0) {
+    snake.dx = grid;
+    snake.dy = 0;
+  }
+  else if (e.which === 83 && snake.dy === 0) {
+    snake.dy = grid;
+    snake.dx = 0;
+  }
+});
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
